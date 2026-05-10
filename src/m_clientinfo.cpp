@@ -16,7 +16,7 @@ class ModuleClientInfo : public Module
 {
  private:
 
-	LocalExtItem<ClientInfo> ext;
+	LocalExtItem<ClientInfo*> ext;
 
  public:
 
@@ -50,9 +50,9 @@ class ModuleClientInfo : public Module
 		if (parameters[1] != "useragent")
 			return MOD_RES_PASSTHRU;
 
-		ClientInfo ci;
+		ClientInfo* ci = new ClientInfo();
 
-		DetectClientInfo(parameters[2], ci);
+		DetectClientInfo(parameters[2], *ci);
 
 		ext.Set(user, ci);
 
@@ -60,11 +60,11 @@ class ModuleClientInfo : public Module
 			'a',
 			"CLIENTINFO: " + user->nick +
 			" [" + user->GetAddress() + "] " +
-			"using " + ci.browser +
-			" on " + ci.os
+			"using " + ci->browser +
+			" on " + ci->os
 		);
 
-		if (ci.bot)
+		if (ci->bot)
 		{
 			ServerInstance->SNO.WriteGlobalSno(
 				'a',
@@ -74,7 +74,7 @@ class ModuleClientInfo : public Module
 			);
 		}
 
-		if (ci.riskscore >= 80)
+		if (ci->riskscore >= 80)
 		{
 			ServerInstance->SNO.WriteGlobalSno(
 				'a',
@@ -84,7 +84,7 @@ class ModuleClientInfo : public Module
 			);
 		}
 
-		if (ci.malicious)
+		if (ci->malicious)
 		{
 			ServerInstance->SNO.WriteGlobalSno(
 				'a',
