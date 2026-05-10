@@ -71,6 +71,18 @@ class ModuleClientInfo : public Module
 		if (parameters[1] != "useragent")
 			return MOD_RES_PASSTHRU;
 
+		if (parameters[2].length() > 512)
+		{
+			ServerInstance->SNO.WriteGlobalSno(
+				'a',
+				"CLIENTINFO ALERT: Oversized User-Agent from " +
+				user->nick +
+				" [" + user->GetAddress() + "]"
+			);
+
+			return MOD_RES_DENY;
+		}
+
 		ext.Unset(user);
 
 		ClientInfo* ci = new ClientInfo();
