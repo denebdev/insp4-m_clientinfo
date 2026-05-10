@@ -185,6 +185,15 @@ class ModuleClientInfo : public Module
 			);
 		}
 
+		if (ci->malicious)
+		{
+			ctx.source->WriteNumeric(
+				320,
+				ctx.target->nick,
+				"CLIENTINFO Malicious: YES"
+			);
+		}
+
 		if (!ci->riskreason.empty())
 		{
 			ctx.source->WriteNumeric(
