@@ -1,4 +1,4 @@
-#include "../include/clientinfo.h"
+#include "clientinfo.h"
 
 #include <algorithm>
 #include <cctype>
