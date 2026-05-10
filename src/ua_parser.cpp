@@ -43,7 +43,11 @@ void DetectClientInfo(const std::string& ua, ClientInfo& ci)
 		ci.os = "macOS";
 
 	else
+	{
 		ci.os = "Unknown";
+		ci.riskscore += 10;
+		ci.riskreason += "UnknownOS ";
+	}
 
 	/* Device */
 
