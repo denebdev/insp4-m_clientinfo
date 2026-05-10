@@ -64,6 +64,51 @@ class ModuleClientInfo : public Module
 		return MOD_RES_PASSTHRU;
 	}
 
+	void OnWhois(Whois::Context& ctx) override
+	{
+		if (!ctx.source->IsOper())
+			return;
+
+		ClientInfo* ci = ext.Get(ctx.target);
+
+		if (!ci)
+			return;
+
+		ctx.source->WriteNumeric(
+			320,
+			ctx.target->nick,
+			"CLIENTINFO Browser: " + ci->browser
+		);
+
+		ctx.source->WriteNumeric(
+			320,
+			ctx.target->nick,
+			"CLIENTINFO OS: " + ci->os
+		);
+
+		ctx.source->WriteNumeric(
+			320,
+			ctx.target->nick,
+			"CLIENTINFO Device: " + ci->device
+		);
+
+		ctx.source->WriteNumeric(
+			320,
+			ctx.target->nick,
+			"CLIENTINFO RiskScore: " +
+			ConvToStr(ci->riskscore)
+		);
+
+		if (ci->bot)
+		{
+			ctx.source->WriteNumeric(
+				320,
+				ctx.target->nick,
+				"CLIENTINFO Bot: YES"
+			);
+		}
+	}
+
 	Version GetVersion() override
 	{
 		return Version("Advanced WebIRC intelligence module", VF_VENDOR);
