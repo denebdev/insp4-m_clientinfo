@@ -1,21 +1,36 @@
 #include "../include/clientinfo.h"
 
+#include <algorithm>
+#include <cctype>
+
 void DetectClientInfo(const std::string& ua, ClientInfo& ci)
 {
 	ci.useragent = ua;
 
+	std::string lowerua = ua;
+
+	std::transform(
+		lowerua.begin(),
+		lowerua.end(),
+		lowerua.begin(),
+		[](unsigned char c)
+		{
+			return std::tolower(c);
+		}
+	);
+
 	/* Browser detection */
 
-	if (ua.find("Firefox") != std::string::npos)
+	if (lowerua.find("firefox") != std::string::npos)
 		ci.browser = "Firefox";
 
-	else if (ua.find("Edg") != std::string::npos)
+	else if (lowerua.find("edg") != std::string::npos)
 		ci.browser = "Edge";
 
-	else if (ua.find("Chrome") != std::string::npos)
+	else if (lowerua.find("chrome") != std::string::npos)
 		ci.browser = "Chrome";
 
-	else if (ua.find("Safari") != std::string::npos)
+	else if (lowerua.find("safari") != std::string::npos)
 		ci.browser = "Safari";
 
 	else
@@ -27,19 +42,19 @@ void DetectClientInfo(const std::string& ua, ClientInfo& ci)
 
 	/* OS detection */
 
-	if (ua.find("Windows NT 10") != std::string::npos)
+	if (lowerua.find("windows nt 10") != std::string::npos)
 		ci.os = "Windows 10/11";
 
-	else if (ua.find("Android") != std::string::npos)
+	else if (lowerua.find("android") != std::string::npos)
 		ci.os = "Android";
 
-	else if (ua.find("iPhone") != std::string::npos)
+	else if (lowerua.find("iphone") != std::string::npos)
 		ci.os = "iPhone";
 
-	else if (ua.find("Linux") != std::string::npos)
+	else if (lowerua.find("linux") != std::string::npos)
 		ci.os = "Linux";
 
-	else if (ua.find("Mac OS") != std::string::npos)
+	else if (lowerua.find("mac os") != std::string::npos)
 		ci.os = "macOS";
 
 	else
@@ -51,7 +66,7 @@ void DetectClientInfo(const std::string& ua, ClientInfo& ci)
 
 	/* Device */
 
-	if (ua.find("Mobile") != std::string::npos)
+	if (lowerua.find("mobile") != std::string::npos)
 	{
 		ci.mobile = true;
 		ci.device = "Mobile";
@@ -63,12 +78,12 @@ void DetectClientInfo(const std::string& ua, ClientInfo& ci)
 
 	/* Engine */
 
-	if (ua.find("AppleWebKit") != std::string::npos)
+	if (lowerua.find("applewebkit") != std::string::npos)
 		ci.engine = "WebKit/Blink";
 
 	/* Bot detection */
 
-	if (ua.find("Headless") != std::string::npos)
+	if (lowerua.find("headless") != std::string::npos)
 	{
 		ci.bot = true;
 		ci.headless = true;
@@ -76,244 +91,244 @@ void DetectClientInfo(const std::string& ua, ClientInfo& ci)
 		ci.riskreason += "Headless ";
 	}
 
-	if (ua.find("selenium") != std::string::npos)
+	if (lowerua.find("selenium") != std::string::npos)
 	{
 		ci.bot = true;
 		ci.riskscore += 50;
 		ci.riskreason += "Selenium ";
 	}
 
-	if (ua.find("puppeteer") != std::string::npos)
+	if (lowerua.find("puppeteer") != std::string::npos)
 	{
 		ci.bot = true;
 		ci.riskscore += 50;
 		ci.riskreason += "Puppeteer ";
 	}
 
-	if (ua.find("playwright") != std::string::npos)
+	if (lowerua.find("playwright") != std::string::npos)
 	{
 		ci.bot = true;
 		ci.riskscore += 50;
 		ci.riskreason += "Playwright ";
 	}
 
-	if (ua.find("PhantomJS") != std::string::npos)
+	if (lowerua.find("phantomjs") != std::string::npos)
 	{
 		ci.bot = true;
 		ci.riskscore += 60;
 		ci.riskreason += "PhantomJS ";
 	}
 
-	if (ua.find("Scrapy") != std::string::npos)
+	if (lowerua.find("scrapy") != std::string::npos)
 	{
 		ci.bot = true;
 		ci.riskscore += 80;
 		ci.riskreason += "Scrapy ";
 	}
 
-	if (ua.find("aiohttp") != std::string::npos)
+	if (lowerua.find("aiohttp") != std::string::npos)
 	{
 		ci.bot = true;
 		ci.riskscore += 70;
 		ci.riskreason += "aiohttp ";
 	}
 
-	if (ua.find("libwww") != std::string::npos)
+	if (lowerua.find("libwww") != std::string::npos)
 	{
 		ci.bot = true;
 		ci.riskscore += 80;
 		ci.riskreason += "libwww ";
 	}
 
-	if (ua.find("curl") != std::string::npos)
+	if (lowerua.find("curl") != std::string::npos)
 	{
 		ci.bot = true;
 		ci.riskscore += 90;
 		ci.riskreason += "curl ";
 	}
 
-	if (ua.find("wget") != std::string::npos)
+	if (lowerua.find("wget") != std::string::npos)
 	{
 		ci.bot = true;
 		ci.riskscore += 90;
 		ci.riskreason += "wget ";
 	}
 
-	if (ua.find("python-requests") != std::string::npos)
+	if (lowerua.find("python-requests") != std::string::npos)
 	{
 		ci.bot = true;
 		ci.riskscore += 80;
 		ci.riskreason += "python ";
 	}
 
-	if (ua.find("Java") != std::string::npos)
+	if (lowerua.find("java") != std::string::npos)
 	{
 		ci.bot = true;
 		ci.riskscore += 40;
 		ci.riskreason += "Java ";
 	}
 
-	if (ua.find("Electron") != std::string::npos)
+	if (lowerua.find("electron") != std::string::npos)
 	{
 		ci.bot = true;
 		ci.riskscore += 35;
 		ci.riskreason += "Electron ";
 	}
 
-	if (ua.find("Node.js") != std::string::npos)
+	if (lowerua.find("node.js") != std::string::npos)
 	{
 		ci.bot = true;
 		ci.riskscore += 40;
 		ci.riskreason += "NodeJS ";
 	}
 
-	if (ua.find("axios") != std::string::npos)
+	if (lowerua.find("axios") != std::string::npos)
 	{
 		ci.bot = true;
 		ci.riskscore += 60;
 		ci.riskreason += "axios ";
 	}
 
-	if (ua.find("undici") != std::string::npos)
+	if (lowerua.find("undici") != std::string::npos)
 	{
 		ci.bot = true;
 		ci.riskscore += 60;
 		ci.riskreason += "undici ";
 	}
 
-	if (ua.find("DiscordBot") != std::string::npos)
+	if (lowerua.find("discordbot") != std::string::npos)
 	{
 		ci.bot = true;
 		ci.riskscore += 70;
 		ci.riskreason += "DiscordBot ";
 	}
 
-	if (ua.find("Tor Browser") != std::string::npos)
+	if (lowerua.find("tor browser") != std::string::npos)
 	{
 		ci.proxy = true;
 		ci.riskscore += 40;
 		ci.riskreason += "TorBrowser ";
 	}
 
-	if (ua.find("torsocks") != std::string::npos)
+	if (lowerua.find("torsocks") != std::string::npos)
 	{
 		ci.proxy = true;
 		ci.riskscore += 50;
 		ci.riskreason += "TorSocks ";
 	}
 
-	if (ua.find("tor-exit") != std::string::npos)
+	if (lowerua.find("tor-exit") != std::string::npos)
 	{
 		ci.proxy = true;
 		ci.riskscore += 60;
 		ci.riskreason += "TorExit ";
 	}
 
-	if (ua.find("GPTBot") != std::string::npos)
+	if (lowerua.find("gptbot") != std::string::npos)
 	{
 		ci.bot = true;
 		ci.riskscore += 50;
 		ci.riskreason += "GPTBot ";
 	}
 
-	if (ua.find("ClaudeBot") != std::string::npos)
+	if (lowerua.find("claudebot") != std::string::npos)
 	{
 		ci.bot = true;
 		ci.riskscore += 50;
 		ci.riskreason += "ClaudeBot ";
 	}
 
-	if (ua.find("CCBot") != std::string::npos)
+	if (lowerua.find("ccbot") != std::string::npos)
 	{
 		ci.bot = true;
 		ci.riskscore += 50;
 		ci.riskreason += "CCBot ";
 	}
 
-	if (ua.find("Bytespider") != std::string::npos)
+	if (lowerua.find("bytespider") != std::string::npos)
 	{
 		ci.bot = true;
 		ci.riskscore += 60;
 		ci.riskreason += "ByteSpider ";
 	}
 
-	if (ua.find("Amazonbot") != std::string::npos)
+	if (lowerua.find("amazonbot") != std::string::npos)
 	{
 		ci.bot = true;
 		ci.riskscore += 50;
 		ci.riskreason += "AmazonBot ";
 	}
 
-	if (ua.empty())
+	if (lowerua.empty())
 	{
 		ci.riskscore += 20;
 		ci.riskreason += "empty-ua ";
 	}
 
-	if (ua.find("OVH") != std::string::npos)
+	if (lowerua.find("ovh") != std::string::npos)
 	{
 		ci.proxy = true;
 		ci.riskscore += 20;
 		ci.riskreason += "OVH ";
 	}
 
-	if (ua.find("DigitalOcean") != std::string::npos)
+	if (lowerua.find("digitalocean") != std::string::npos)
 	{
 		ci.proxy = true;
 		ci.riskscore += 20;
 		ci.riskreason += "DigitalOcean ";
 	}
 
-	if (ua.find("Amazon") != std::string::npos)
+	if (lowerua.find("amazon") != std::string::npos)
 	{
 		ci.proxy = true;
 		ci.riskscore += 20;
 		ci.riskreason += "AWS ";
 	}
 
-	if (ua.find("Azure") != std::string::npos)
+	if (lowerua.find("azure") != std::string::npos)
 	{
 		ci.proxy = true;
 		ci.riskscore += 20;
 		ci.riskreason += "Azure ";
 	}
 
-	if (ua.find("GoogleCloud") != std::string::npos)
+	if (lowerua.find("googlecloud") != std::string::npos)
 	{
 		ci.proxy = true;
 		ci.riskscore += 20;
 		ci.riskreason += "GoogleCloud ";
 	}
 
-	if (ua.find("ProtonVPN") != std::string::npos)
+	if (lowerua.find("protonvpn") != std::string::npos)
 	{
 		ci.proxy = true;
 		ci.riskscore += 35;
 		ci.riskreason += "ProtonVPN ";
 	}
 
-	if (ua.find("Mullvad") != std::string::npos)
+	if (lowerua.find("mullvad") != std::string::npos)
 	{
 		ci.proxy = true;
 		ci.riskscore += 35;
 		ci.riskreason += "Mullvad ";
 	}
 
-	if (ua.find("NordVPN") != std::string::npos)
+	if (lowerua.find("nordvpn") != std::string::npos)
 	{
 		ci.proxy = true;
 		ci.riskscore += 35;
 		ci.riskreason += "NordVPN ";
 	}
 
-	if (ua.find("OpenVPN") != std::string::npos)
+	if (lowerua.find("openvpn") != std::string::npos)
 	{
 		ci.proxy = true;
 		ci.riskscore += 25;
 		ci.riskreason += "OpenVPN ";
 	}
 
-	if (ua.find("WireGuard") != std::string::npos)
+	if (lowerua.find("wireguard") != std::string::npos)
 	{
 		ci.proxy = true;
 		ci.riskscore += 25;
@@ -322,16 +337,16 @@ void DetectClientInfo(const std::string& ua, ClientInfo& ci)
 
 	int browsercount = 0;
 
-	if (ua.find("Chrome") != std::string::npos)
+	if (lowerua.find("chrome") != std::string::npos)
 		browsercount++;
 
-	if (ua.find("Firefox") != std::string::npos)
+	if (lowerua.find("firefox") != std::string::npos)
 		browsercount++;
 
-	if (ua.find("Safari") != std::string::npos)
+	if (lowerua.find("safari") != std::string::npos)
 		browsercount++;
 
-	if (ua.find("Edge") != std::string::npos)
+	if (lowerua.find("edge") != std::string::npos)
 		browsercount++;
 
 	if (browsercount >= 3)
@@ -340,7 +355,7 @@ void DetectClientInfo(const std::string& ua, ClientInfo& ci)
 		ci.riskreason += "FakeUA ";
 	}
 
-	if (ua.length() < 20)
+	if (lowerua.length() < 20)
 	{
 		ci.riskscore += 25;
 		ci.riskreason += "ShortUA ";
