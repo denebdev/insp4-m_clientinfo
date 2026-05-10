@@ -16,12 +16,33 @@ class ModuleClientInfo : public Module
 {
  private:
 
-	LocalExtItem<ClientInfo*> ext;
+	class ClientInfoExt
+		: public LocalExtItem<ClientInfo*>
+	{
+	 public:
+
+		ClientInfoExt(Module* parent)
+			: LocalExtItem<ClientInfo*>(parent, "clientinfo")
+		{
+		}
+
+		~ClientInfoExt() override
+		{
+		}
+
+		void Delete(Extensible* container,
+			void* item) override
+		{
+			delete static_cast<ClientInfo*>(item);
+		}
+	};
+
+	ClientInfoExt ext;
 
  public:
 
 	ModuleClientInfo()
-		: ext(this, "clientinfo")
+		: ext(this)
 	{
 		Implementation eventlist[] =
 		{
