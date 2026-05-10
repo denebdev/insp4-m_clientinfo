@@ -176,6 +176,13 @@ class ModuleClientInfo : public Module
 		ctx.source->WriteNumeric(
 			320,
 			ctx.target->nick,
+			"CLIENTINFO UALength: " +
+			ConvToStr(ci->useragent.length())
+		);
+
+		ctx.source->WriteNumeric(
+			320,
+			ctx.target->nick,
 			"CLIENTINFO IP: " +
 			ctx.target->GetAddress()
 		);
