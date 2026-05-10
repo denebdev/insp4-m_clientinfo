@@ -73,6 +73,48 @@ void DetectClientInfo(const std::string& ua, ClientInfo& ci)
 		ci.riskreason += "Selenium ";
 	}
 
+	if (ua.find("puppeteer") != std::string::npos)
+	{
+		ci.bot = true;
+		ci.riskscore += 50;
+		ci.riskreason += "Puppeteer ";
+	}
+
+	if (ua.find("playwright") != std::string::npos)
+	{
+		ci.bot = true;
+		ci.riskscore += 50;
+		ci.riskreason += "Playwright ";
+	}
+
+	if (ua.find("PhantomJS") != std::string::npos)
+	{
+		ci.bot = true;
+		ci.riskscore += 60;
+		ci.riskreason += "PhantomJS ";
+	}
+
+	if (ua.find("Scrapy") != std::string::npos)
+	{
+		ci.bot = true;
+		ci.riskscore += 80;
+		ci.riskreason += "Scrapy ";
+	}
+
+	if (ua.find("aiohttp") != std::string::npos)
+	{
+		ci.bot = true;
+		ci.riskscore += 70;
+		ci.riskreason += "aiohttp ";
+	}
+
+	if (ua.find("libwww") != std::string::npos)
+	{
+		ci.bot = true;
+		ci.riskscore += 80;
+		ci.riskreason += "libwww ";
+	}
+
 	if (ua.find("curl") != std::string::npos)
 	{
 		ci.bot = true;
@@ -92,6 +134,13 @@ void DetectClientInfo(const std::string& ua, ClientInfo& ci)
 		ci.bot = true;
 		ci.riskscore += 80;
 		ci.riskreason += "python ";
+	}
+
+	if (ua.find("Java") != std::string::npos)
+	{
+		ci.bot = true;
+		ci.riskscore += 40;
+		ci.riskreason += "Java ";
 	}
 
 	if (ua.empty())
