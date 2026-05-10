@@ -73,6 +73,16 @@ class ModuleClientInfo : public Module
 			);
 		}
 
+		if (ci.malicious)
+		{
+			ServerInstance->SNO.WriteGlobalSno(
+				'a',
+				"CLIENTINFO MALICIOUS: Dangerous client detected from " +
+				user->nick +
+				" [" + user->GetAddress() + "]"
+			);
+		}
+
 		return MOD_RES_PASSTHRU;
 	}
 
