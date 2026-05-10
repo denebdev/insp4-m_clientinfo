@@ -219,4 +219,10 @@ void DetectClientInfo(const std::string& ua, ClientInfo& ci)
 		ci.riskscore += 25;
 		ci.riskreason += "ShortUA ";
 	}
+
+	if (ci.riskscore >= 120)
+	{
+		ci.malicious = true;
+		ci.riskreason += "Malicious ";
+	}
 }
