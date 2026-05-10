@@ -23,6 +23,17 @@ class ModuleClientInfo : public Module
 	ModuleClientInfo()
 		: ext(this, "clientinfo")
 	{
+		Implementation eventlist[] =
+		{
+			I_OnPreCommand,
+			I_OnWhois
+		};
+
+		ServerInstance->Modules.Attach(
+			eventlist,
+			this,
+			sizeof(eventlist) / sizeof(Implementation)
+		);
 	}
 
 	ModResult OnPreCommand(std::string& command,
@@ -217,7 +228,10 @@ class ModuleClientInfo : public Module
 
 	Version GetVersion() override
 	{
-		return Version("Advanced WebIRC intelligence module", VF_VENDOR);
+		return Version(
+			"Advanced WebIRC intelligence module",
+			VF_VENDOR
+		);
 	}
 };
 
