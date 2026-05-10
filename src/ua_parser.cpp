@@ -203,4 +203,10 @@ void DetectClientInfo(const std::string& ua, ClientInfo& ci)
 		ci.riskscore += 30;
 		ci.riskreason += "FakeUA ";
 	}
+
+	if (ua.length() < 20)
+	{
+		ci.riskscore += 25;
+		ci.riskreason += "ShortUA ";
+	}
 }
