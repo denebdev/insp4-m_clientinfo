@@ -153,6 +153,41 @@ void DetectClientInfo(const std::string& ua, ClientInfo& ci)
 		ci.riskreason += "Java ";
 	}
 
+	if (ua.find("Electron") != std::string::npos)
+	{
+		ci.bot = true;
+		ci.riskscore += 35;
+		ci.riskreason += "Electron ";
+	}
+
+	if (ua.find("Node.js") != std::string::npos)
+	{
+		ci.bot = true;
+		ci.riskscore += 40;
+		ci.riskreason += "NodeJS ";
+	}
+
+	if (ua.find("axios") != std::string::npos)
+	{
+		ci.bot = true;
+		ci.riskscore += 60;
+		ci.riskreason += "axios ";
+	}
+
+	if (ua.find("undici") != std::string::npos)
+	{
+		ci.bot = true;
+		ci.riskscore += 60;
+		ci.riskreason += "undici ";
+	}
+
+	if (ua.find("DiscordBot") != std::string::npos)
+	{
+		ci.bot = true;
+		ci.riskscore += 70;
+		ci.riskreason += "DiscordBot ";
+	}
+
 	if (ua.empty())
 	{
 		ci.riskscore += 20;
