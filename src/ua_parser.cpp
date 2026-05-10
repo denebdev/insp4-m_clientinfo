@@ -361,6 +361,14 @@ void DetectClientInfo(const std::string& ua, ClientInfo& ci)
 		ci.riskreason += "ShortUA ";
 	}
 
+	if (lowerua.find("mozilla") != std::string::npos &&
+		lowerua.find("gecko") == std::string::npos &&
+		lowerua.find("webkit") == std::string::npos)
+	{
+		ci.riskscore += 35;
+		ci.riskreason += "FakeMozilla ";
+	}
+
 	if (ci.riskscore >= 120)
 	{
 		ci.malicious = true;
