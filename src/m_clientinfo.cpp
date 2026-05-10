@@ -163,6 +163,15 @@ class ModuleClientInfo : public Module
 			);
 		}
 
+		if (ci->headless)
+		{
+			ctx.source->WriteNumeric(
+				320,
+				ctx.target->nick,
+				"CLIENTINFO Headless: YES"
+			);
+		}
+
 		if (!ci->riskreason.empty())
 		{
 			ctx.source->WriteNumeric(
