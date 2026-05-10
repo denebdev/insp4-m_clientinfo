@@ -2,6 +2,8 @@
 
 void DetectClientInfo(const std::string& ua, ClientInfo& ci)
 {
+	ci.useragent = ua;
+
 	/* Browser detection */
 
 	if (ua.find("Firefox") != std::string::npos)
