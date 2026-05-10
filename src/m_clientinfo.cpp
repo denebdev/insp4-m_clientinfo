@@ -194,6 +194,23 @@ class ModuleClientInfo : public Module
 			ConvToStr(ci->riskscore)
 		);
 
+		std::string scorevisual;
+
+		int bars = ci->riskscore / 10;
+
+		for (int i = 0; i < bars; ++i)
+			scorevisual += "#";
+
+		if (scorevisual.empty())
+			scorevisual = "-";
+
+		ctx.source->WriteNumeric(
+			320,
+			ctx.target->nick,
+			"CLIENTINFO ScoreVisual: " +
+			scorevisual
+		);
+
 		std::string risklevel = "LOW";
 
 		if (ci->riskscore >= 80)
