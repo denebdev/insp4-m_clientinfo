@@ -16,7 +16,7 @@ class ModuleClientInfo : public Module
 {
  private:
 
-	SimpleExtItem<ClientInfo> ext;
+	LocalExtItem<ClientInfo> ext;
 
  public:
 
