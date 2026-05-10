@@ -193,6 +193,18 @@ class ModuleClientInfo : public Module
 			risklevel
 		);
 
+		std::string clienttype = "HUMAN";
+
+		if (ci->bot || ci->headless || ci->malicious)
+			clienttype = "AUTOMATED";
+
+		ctx.source->WriteNumeric(
+			320,
+			ctx.target->nick,
+			"CLIENTINFO Type: " +
+			clienttype
+		);
+
 		if (ci->bot)
 		{
 			ctx.source->WriteNumeric(
