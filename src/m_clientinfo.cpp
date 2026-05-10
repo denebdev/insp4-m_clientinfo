@@ -107,6 +107,13 @@ class ModuleClientInfo : public Module
 		ctx.source->WriteNumeric(
 			320,
 			ctx.target->nick,
+			"CLIENTINFO IP: " +
+			ctx.target->GetAddress()
+		);
+
+		ctx.source->WriteNumeric(
+			320,
+			ctx.target->nick,
 			"CLIENTINFO RiskScore: " +
 			ConvToStr(ci->riskscore)
 		);
