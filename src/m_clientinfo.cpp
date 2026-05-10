@@ -127,6 +127,15 @@ class ModuleClientInfo : public Module
 			);
 		}
 
+		if (ci->proxy)
+		{
+			ctx.source->WriteNumeric(
+				320,
+				ctx.target->nick,
+				"CLIENTINFO Proxy: YES"
+			);
+		}
+
 		if (!ci->riskreason.empty())
 		{
 			ctx.source->WriteNumeric(
