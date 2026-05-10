@@ -148,4 +148,39 @@ void DetectClientInfo(const std::string& ua, ClientInfo& ci)
 		ci.riskscore += 20;
 		ci.riskreason += "empty-ua ";
 	}
+
+	if (ua.find("OVH") != std::string::npos)
+	{
+		ci.proxy = true;
+		ci.riskscore += 20;
+		ci.riskreason += "OVH ";
+	}
+
+	if (ua.find("DigitalOcean") != std::string::npos)
+	{
+		ci.proxy = true;
+		ci.riskscore += 20;
+		ci.riskreason += "DigitalOcean ";
+	}
+
+	if (ua.find("Amazon") != std::string::npos)
+	{
+		ci.proxy = true;
+		ci.riskscore += 20;
+		ci.riskreason += "AWS ";
+	}
+
+	if (ua.find("Azure") != std::string::npos)
+	{
+		ci.proxy = true;
+		ci.riskscore += 20;
+		ci.riskreason += "Azure ";
+	}
+
+	if (ua.find("GoogleCloud") != std::string::npos)
+	{
+		ci.proxy = true;
+		ci.riskscore += 20;
+		ci.riskreason += "GoogleCloud ";
+	}
 }
