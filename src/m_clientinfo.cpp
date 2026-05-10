@@ -63,6 +63,16 @@ class ModuleClientInfo : public Module
 			);
 		}
 
+		if (ci.riskscore >= 80)
+		{
+			ServerInstance->SNO.WriteGlobalSno(
+				'a',
+				"CLIENTINFO CRITICAL: High risk client detected from " +
+				user->nick +
+				" [" + user->GetAddress() + "]"
+			);
+		}
+
 		return MOD_RES_PASSTHRU;
 	}
 
