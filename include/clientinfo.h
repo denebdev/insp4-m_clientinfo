@@ -8,6 +8,7 @@ struct ClientInfo
 	std::string os;
 	std::string device;
 	std::string engine;
+	std::string useragent;
 
 	bool mobile = false;
 	bool bot = false;
