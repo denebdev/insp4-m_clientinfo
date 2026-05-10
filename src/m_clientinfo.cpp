@@ -8,7 +8,7 @@
  */
 
 #include "inspircd.h"
-#include "../include/clientinfo.h"
+#include "clientinfo.h"
 
 void DetectClientInfo(const std::string& ua, ClientInfo& ci);
 
