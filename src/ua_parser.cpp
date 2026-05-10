@@ -259,10 +259,15 @@ void DetectClientInfo(const std::string& ua, ClientInfo& ci)
 		ci.riskreason += "AmazonBot ";
 	}
 
-	if (lowerua.empty())
+	if (lowerua.empty() ||
+		lowerua == "-" ||
+		lowerua == "." ||
+		lowerua == "test" ||
+		lowerua == "bot")
 	{
-		ci.riskscore += 20;
-		ci.riskreason += "empty-ua ";
+		ci.bot = true;
+		ci.riskscore += 40;
+		ci.riskreason += "EmptyUA ";
 	}
 
 	if (lowerua.find("ovh") != std::string::npos)
