@@ -45,6 +45,22 @@ class ModuleClientInfo : public Module
 
 		ext.Set(user, ci);
 
+		ServerInstance->SNO.WriteGlobalSno(
+			'a',
+			"CLIENTINFO: " + user->nick +
+			" using " + ci.browser +
+			" on " + ci.os
+		);
+
+		if (ci.bot)
+		{
+			ServerInstance->SNO.WriteGlobalSno(
+				'a',
+				"CLIENTINFO ALERT: Possible bot detected from " +
+				user->nick
+			);
+		}
+
 		return MOD_RES_PASSTHRU;
 	}
 
