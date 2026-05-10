@@ -89,6 +89,18 @@ class ModuleClientInfo : public Module
 
 		DetectClientInfo(parameters[2], *ci);
 
+		if (ci->riskscore >= 80)
+			user->Extend("clientinfo-risk", "critical");
+
+		else if (ci->riskscore >= 50)
+			user->Extend("clientinfo-risk", "high");
+
+		else if (ci->riskscore >= 20)
+			user->Extend("clientinfo-risk", "medium");
+
+		else
+			user->Extend("clientinfo-risk", "low");
+
 		ext.Set(user, ci);
 
 		ServerInstance->SNO.WriteGlobalSno(
