@@ -17,7 +17,11 @@ void DetectClientInfo(const std::string& ua, ClientInfo& ci)
 		ci.browser = "Safari";
 
 	else
+	{
 		ci.browser = "Unknown";
+		ci.riskscore += 15;
+		ci.riskreason += "UnknownBrowser ";
+	}
 
 	/* OS detection */
 
