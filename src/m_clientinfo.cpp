@@ -14,7 +14,17 @@ void DetectClientInfo(const std::string& ua, ClientInfo& ci);
 
 class ModuleClientInfo : public Module
 {
+ private:
+
+	SimpleExtItem<ClientInfo> ext;
+
  public:
+
+	ModuleClientInfo()
+		: ext(this, "clientinfo")
+	{
+	}
+
 	Version GetVersion() override
 	{
 		return Version("Advanced WebIRC intelligence module", VF_VENDOR);
