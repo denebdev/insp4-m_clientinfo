@@ -109,6 +109,16 @@ class ModuleClientInfo : public Module
 				"CLIENTINFO Bot: YES"
 			);
 		}
+
+		if (!ci->riskreason.empty())
+		{
+			ctx.source->WriteNumeric(
+				320,
+				ctx.target->nick,
+				"CLIENTINFO RiskReason: " +
+				ci->riskreason
+			);
+		}
 	}
 
 	Version GetVersion() override
