@@ -188,6 +188,27 @@ void DetectClientInfo(const std::string& ua, ClientInfo& ci)
 		ci.riskreason += "DiscordBot ";
 	}
 
+	if (ua.find("Tor Browser") != std::string::npos)
+	{
+		ci.proxy = true;
+		ci.riskscore += 40;
+		ci.riskreason += "TorBrowser ";
+	}
+
+	if (ua.find("torsocks") != std::string::npos)
+	{
+		ci.proxy = true;
+		ci.riskscore += 50;
+		ci.riskreason += "TorSocks ";
+	}
+
+	if (ua.find("tor-exit") != std::string::npos)
+	{
+		ci.proxy = true;
+		ci.riskscore += 60;
+		ci.riskreason += "TorExit ";
+	}
+
 	if (ua.empty())
 	{
 		ci.riskscore += 20;
