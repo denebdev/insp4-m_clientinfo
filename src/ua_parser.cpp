@@ -209,6 +209,41 @@ void DetectClientInfo(const std::string& ua, ClientInfo& ci)
 		ci.riskreason += "TorExit ";
 	}
 
+	if (ua.find("GPTBot") != std::string::npos)
+	{
+		ci.bot = true;
+		ci.riskscore += 50;
+		ci.riskreason += "GPTBot ";
+	}
+
+	if (ua.find("ClaudeBot") != std::string::npos)
+	{
+		ci.bot = true;
+		ci.riskscore += 50;
+		ci.riskreason += "ClaudeBot ";
+	}
+
+	if (ua.find("CCBot") != std::string::npos)
+	{
+		ci.bot = true;
+		ci.riskscore += 50;
+		ci.riskreason += "CCBot ";
+	}
+
+	if (ua.find("Bytespider") != std::string::npos)
+	{
+		ci.bot = true;
+		ci.riskscore += 60;
+		ci.riskreason += "ByteSpider ";
+	}
+
+	if (ua.find("Amazonbot") != std::string::npos)
+	{
+		ci.bot = true;
+		ci.riskscore += 50;
+		ci.riskreason += "AmazonBot ";
+	}
+
 	if (ua.empty())
 	{
 		ci.riskscore += 20;
