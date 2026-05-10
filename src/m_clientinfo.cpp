@@ -48,7 +48,8 @@ class ModuleClientInfo : public Module
 		ServerInstance->SNO.WriteGlobalSno(
 			'a',
 			"CLIENTINFO: " + user->nick +
-			" using " + ci.browser +
+			" [" + user->GetAddress() + "] " +
+			"using " + ci.browser +
 			" on " + ci.os
 		);
 
@@ -57,7 +58,8 @@ class ModuleClientInfo : public Module
 			ServerInstance->SNO.WriteGlobalSno(
 				'a',
 				"CLIENTINFO ALERT: Possible bot detected from " +
-				user->nick
+				user->nick +
+				" [" + user->GetAddress() + "]"
 			);
 		}
 
