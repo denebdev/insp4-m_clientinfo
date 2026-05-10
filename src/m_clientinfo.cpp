@@ -118,6 +118,24 @@ class ModuleClientInfo : public Module
 			ConvToStr(ci->riskscore)
 		);
 
+		std::string risklevel = "LOW";
+
+		if (ci->riskscore >= 80)
+			risklevel = "CRITICAL";
+
+		else if (ci->riskscore >= 50)
+			risklevel = "HIGH";
+
+		else if (ci->riskscore >= 20)
+			risklevel = "MEDIUM";
+
+		ctx.source->WriteNumeric(
+			320,
+			ctx.target->nick,
+			"CLIENTINFO RiskLevel: " +
+			risklevel
+		);
+
 		if (ci->bot)
 		{
 			ctx.source->WriteNumeric(
