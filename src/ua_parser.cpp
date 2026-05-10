@@ -183,4 +183,24 @@ void DetectClientInfo(const std::string& ua, ClientInfo& ci)
 		ci.riskscore += 20;
 		ci.riskreason += "GoogleCloud ";
 	}
+
+	int browsercount = 0;
+
+	if (ua.find("Chrome") != std::string::npos)
+		browsercount++;
+
+	if (ua.find("Firefox") != std::string::npos)
+		browsercount++;
+
+	if (ua.find("Safari") != std::string::npos)
+		browsercount++;
+
+	if (ua.find("Edge") != std::string::npos)
+		browsercount++;
+
+	if (browsercount >= 3)
+	{
+		ci.riskscore += 30;
+		ci.riskreason += "FakeUA ";
+	}
 }
