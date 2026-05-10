@@ -9,15 +9,13 @@ struct ClientInfo
 	std::string device;
 	std::string engine;
 	std::string useragent;
-
-	bool mobile = false;
-	bool bot = false;
-	bool headless = false;
-	bool proxy = false;
-	bool secure = false;
-	bool malicious = false;
+	std::string riskreason;
 
 	int riskscore = 0;
 
-	std::string riskreason;
+	bool bot = false;
+	bool proxy = false;
+	bool mobile = false;
+	bool headless = false;
+	bool malicious = false;
 };
