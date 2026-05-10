@@ -71,6 +71,8 @@ class ModuleClientInfo : public Module
 		if (parameters[1] != "useragent")
 			return MOD_RES_PASSTHRU;
 
+		ext.Unset(user);
+
 		ClientInfo* ci = new ClientInfo();
 
 		DetectClientInfo(parameters[2], *ci);
