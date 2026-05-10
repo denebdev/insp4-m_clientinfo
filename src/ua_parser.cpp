@@ -285,6 +285,41 @@ void DetectClientInfo(const std::string& ua, ClientInfo& ci)
 		ci.riskreason += "GoogleCloud ";
 	}
 
+	if (ua.find("ProtonVPN") != std::string::npos)
+	{
+		ci.proxy = true;
+		ci.riskscore += 35;
+		ci.riskreason += "ProtonVPN ";
+	}
+
+	if (ua.find("Mullvad") != std::string::npos)
+	{
+		ci.proxy = true;
+		ci.riskscore += 35;
+		ci.riskreason += "Mullvad ";
+	}
+
+	if (ua.find("NordVPN") != std::string::npos)
+	{
+		ci.proxy = true;
+		ci.riskscore += 35;
+		ci.riskreason += "NordVPN ";
+	}
+
+	if (ua.find("OpenVPN") != std::string::npos)
+	{
+		ci.proxy = true;
+		ci.riskscore += 25;
+		ci.riskreason += "OpenVPN ";
+	}
+
+	if (ua.find("WireGuard") != std::string::npos)
+	{
+		ci.proxy = true;
+		ci.riskscore += 25;
+		ci.riskreason += "WireGuard ";
+	}
+
 	int browsercount = 0;
 
 	if (ua.find("Chrome") != std::string::npos)
