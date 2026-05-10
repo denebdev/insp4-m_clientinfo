@@ -154,6 +154,15 @@ class ModuleClientInfo : public Module
 			);
 		}
 
+		if (ci->mobile)
+		{
+			ctx.source->WriteNumeric(
+				320,
+				ctx.target->nick,
+				"CLIENTINFO Mobile: YES"
+			);
+		}
+
 		if (!ci->riskreason.empty())
 		{
 			ctx.source->WriteNumeric(
