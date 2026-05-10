@@ -15,6 +15,7 @@ struct ClientInfo
 	bool headless = false;
 	bool proxy = false;
 	bool secure = false;
+	bool malicious = false;
 
 	int riskscore = 0;
 
