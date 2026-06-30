@@ -8,32 +8,24 @@
  */
 
 #include "inspircd.h"
+#include "modules/whois.h"
 #include "clientinfo.h"
 
 void DetectClientInfo(const std::string& ua, ClientInfo& ci);
 
 class ModuleClientInfo : public Module
+	, public Whois::EventListener
 {
  private:
 
 	class ClientInfoExt
-		: public LocalExtItem<ClientInfo*>
+		: public SimpleExtItem<ClientInfo>
 	{
 	 public:
 
-		ClientInfoExt(Module* parent)
-			: LocalExtItem<ClientInfo*>(parent, "clientinfo")
+		ClientInfoExt(const WeakModulePtr& parent)
+			: SimpleExtItem<ClientInfo>(parent, "clientinfo", ExtensionType::USER)
 		{
-		}
-
-		~ClientInfoExt() override
-		{
-		}
-
-		void Delete(Extensible* container,
-			void* item) override
-		{
-			delete static_cast<ClientInfo*>(item);
 		}
 	};
 
@@ -42,19 +34,10 @@ class ModuleClientInfo : public Module
  public:
 
 	ModuleClientInfo()
-		: ext(this)
+		: Module(VF_VENDOR, "Advanced WebIRC intelligence and client metadata module.")
+		, Whois::EventListener(weak_from_this())
+		, ext(weak_from_this())
 	{
-		Implementation eventlist[] =
-		{
-			I_OnPreCommand,
-			I_OnWhois
-		};
-
-		ServerInstance->Modules.Attach(
-			eventlist,
-			this,
-			sizeof(eventlist) / sizeof(Implementation)
-		);
 	}
 
 	ModResult OnPreCommand(std::string& command,
@@ -62,6 +45,8 @@ class ModuleClientInfo : public Module
 		LocalUser* user,
 		bool validated) override
 	{
+		(void)validated;
+
 		if (command != "METADATA")
 			return MOD_RES_PASSTHRU;
 
@@ -85,21 +70,19 @@ class ModuleClientInfo : public Module
 
 		ext.Unset(user);
 
-		ClientInfo* ci = new ClientInfo();
-
-		DetectClientInfo(parameters[2], *ci);
-
-		ext.Set(user, ci);
+		ClientInfo ci;
+		DetectClientInfo(parameters[2], ci);
+		ext.Set(user, ci, false);
 
 		ServerInstance->SNO.WriteGlobalSno(
 			'a',
 			"CLIENTINFO: " + user->nick +
 			" [" + user->GetAddress() + "] " +
-			"using " + ci->browser +
-			" on " + ci->os
+			"using " + ci.browser +
+			" on " + ci.os
 		);
 
-		if (ci->bot)
+		if (ci.bot)
 		{
 			ServerInstance->SNO.WriteGlobalSno(
 				'a',
@@ -109,7 +92,7 @@ class ModuleClientInfo : public Module
 			);
 		}
 
-		if (ci->riskscore >= 80)
+		if (ci.riskscore >= 80)
 		{
 			ServerInstance->SNO.WriteGlobalSno(
 				'a',
@@ -119,7 +102,7 @@ class ModuleClientInfo : public Module
 			);
 		}
 
-		if (ci->malicious)
+		if (ci.malicious)
 		{
 			ServerInstance->SNO.WriteGlobalSno(
 				'a',
@@ -134,62 +117,57 @@ class ModuleClientInfo : public Module
 
 	void OnWhois(Whois::Context& ctx) override
 	{
-		if (!ctx.source->IsOper())
+		LocalUser* source = ctx.GetSource();
+		User* target = ctx.GetTarget();
+
+		if (!source->IsOper())
 			return;
 
-		ClientInfo* ci = ext.Get(ctx.target);
+		ClientInfo* ci = ext.Get(target);
 
 		if (!ci)
 			return;
 
-		ctx.source->WriteNumeric(
-			320,
-			ctx.target->nick,
+		ctx.SendLine(
+			RPL_WHOISSPECIAL,
 			"CLIENTINFO Browser: " + ci->browser
 		);
 
-		ctx.source->WriteNumeric(
-			320,
-			ctx.target->nick,
+		ctx.SendLine(
+			RPL_WHOISSPECIAL,
 			"CLIENTINFO OS: " + ci->os
 		);
 
-		ctx.source->WriteNumeric(
-			320,
-			ctx.target->nick,
+		ctx.SendLine(
+			RPL_WHOISSPECIAL,
 			"CLIENTINFO Device: " + ci->device
 		);
 
-		ctx.source->WriteNumeric(
-			320,
-			ctx.target->nick,
+		ctx.SendLine(
+			RPL_WHOISSPECIAL,
 			"CLIENTINFO Engine: " + ci->engine
 		);
 
-		ctx.source->WriteNumeric(
-			320,
-			ctx.target->nick,
+		ctx.SendLine(
+			RPL_WHOISSPECIAL,
 			"CLIENTINFO UserAgent: " +
 			ci->useragent
 		);
 
-		ctx.source->WriteNumeric(
-			320,
-			ctx.target->nick,
+		ctx.SendLine(
+			RPL_WHOISSPECIAL,
 			"CLIENTINFO UALength: " +
 			ConvToStr(ci->useragent.length())
 		);
 
-		ctx.source->WriteNumeric(
-			320,
-			ctx.target->nick,
+		ctx.SendLine(
+			RPL_WHOISSPECIAL,
 			"CLIENTINFO IP: " +
-			ctx.target->GetAddress()
+			target->GetAddress()
 		);
 
-		ctx.source->WriteNumeric(
-			320,
-			ctx.target->nick,
+		ctx.SendLine(
+			RPL_WHOISSPECIAL,
 			"CLIENTINFO RiskScore: " +
 			ConvToStr(ci->riskscore)
 		);
@@ -204,9 +182,8 @@ class ModuleClientInfo : public Module
 		if (scorevisual.empty())
 			scorevisual = "-";
 
-		ctx.source->WriteNumeric(
-			320,
-			ctx.target->nick,
+		ctx.SendLine(
+			RPL_WHOISSPECIAL,
 			"CLIENTINFO ScoreVisual: " +
 			scorevisual
 		);
@@ -222,9 +199,8 @@ class ModuleClientInfo : public Module
 		else if (ci->riskscore >= 20)
 			risklevel = "MEDIUM";
 
-		ctx.source->WriteNumeric(
-			320,
-			ctx.target->nick,
+		ctx.SendLine(
+			RPL_WHOISSPECIAL,
 			"CLIENTINFO RiskLevel: " +
 			risklevel
 		);
@@ -234,75 +210,60 @@ class ModuleClientInfo : public Module
 		if (ci->bot || ci->headless || ci->malicious)
 			clienttype = "AUTOMATED";
 
-		ctx.source->WriteNumeric(
-			320,
-			ctx.target->nick,
+		ctx.SendLine(
+			RPL_WHOISSPECIAL,
 			"CLIENTINFO Type: " +
 			clienttype
 		);
 
 		if (ci->bot)
 		{
-			ctx.source->WriteNumeric(
-				320,
-				ctx.target->nick,
+			ctx.SendLine(
+				RPL_WHOISSPECIAL,
 				"CLIENTINFO Bot: YES"
 			);
 		}
 
 		if (ci->proxy)
 		{
-			ctx.source->WriteNumeric(
-				320,
-				ctx.target->nick,
+			ctx.SendLine(
+				RPL_WHOISSPECIAL,
 				"CLIENTINFO Proxy: YES"
 			);
 		}
 
 		if (ci->mobile)
 		{
-			ctx.source->WriteNumeric(
-				320,
-				ctx.target->nick,
+			ctx.SendLine(
+				RPL_WHOISSPECIAL,
 				"CLIENTINFO Mobile: YES"
 			);
 		}
 
 		if (ci->headless)
 		{
-			ctx.source->WriteNumeric(
-				320,
-				ctx.target->nick,
+			ctx.SendLine(
+				RPL_WHOISSPECIAL,
 				"CLIENTINFO Headless: YES"
 			);
 		}
 
 		if (ci->malicious)
 		{
-			ctx.source->WriteNumeric(
-				320,
-				ctx.target->nick,
+			ctx.SendLine(
+				RPL_WHOISSPECIAL,
 				"CLIENTINFO Malicious: YES"
 			);
 		}
 
 		if (!ci->riskreason.empty())
 		{
-			ctx.source->WriteNumeric(
-				320,
-				ctx.target->nick,
+			ctx.SendLine(
+				RPL_WHOISSPECIAL,
 				"CLIENTINFO RiskReason: " +
 				ci->riskreason
 			);
 		}
-	}
-
-	Version GetVersion() override
-	{
-		return Version(
-			"Advanced WebIRC intelligence module",
-			VF_VENDOR
-		);
 	}
 };
 

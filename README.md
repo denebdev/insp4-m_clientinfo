@@ -47,6 +47,38 @@ Advanced WebIRC intelligence and client metadata module for InspIRCd4.
 
 Early development.
 
+## Build
+
+This module must be built against an InspIRCd 4 source tree.
+
+Requirements:
+
+- InspIRCd 4 source tree
+- CMake
+- C++ compiler supported by InspIRCd
+
+Build:
+
+```sh
+./build-inspircd.sh /path/to/inspircd
+```
+
+The script copies the module into `modules/clientinfo` inside the InspIRCd
+source tree, configures CMake if needed, and builds the `m_clientinfo` module
+target.
+
+Install the resulting module into your InspIRCd module directory:
+
+```sh
+install -m 0755 /path/to/inspircd/build/modules/m_clientinfo.so /path/to/inspircd/modules/
+```
+
+Load it from your InspIRCd config:
+
+```xml
+<module name="clientinfo">
+```
+
 ## License
 
 GPLv2

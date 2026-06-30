@@ -1,0 +1,24 @@
+name: build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  inspircd4:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out module
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake git libpcre2-dev perl pkg-config
+
+      - name: Check out InspIRCd
+        run: git clone --depth 1 https://github.com/inspircd/inspircd.git ../inspircd
+
+      - name: Build module
+        run: ./build-inspircd.sh ../inspircd
