@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Check out module
         uses: actions/checkout@v4
+        with:
+          path: module
 
       - name: Install build dependencies
         run: |
@@ -18,7 +20,10 @@ jobs:
           sudo apt-get install -y build-essential cmake git libpcre2-dev perl pkg-config
 
       - name: Check out InspIRCd
-        run: git clone --depth 1 https://github.com/inspircd/inspircd.git ../inspircd
+        uses: actions/checkout@v4
+        with:
+          repository: inspircd/inspircd
+          path: inspircd
 
       - name: Build module
-        run: ./build-inspircd.sh ../inspircd
+        run: ./module/build-inspircd.sh ./inspircd
