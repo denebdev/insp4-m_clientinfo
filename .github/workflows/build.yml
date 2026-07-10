@@ -23,6 +23,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: inspircd/inspircd
+          ref: master
           path: inspircd
 
       - name: Build module
