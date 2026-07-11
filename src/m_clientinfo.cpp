@@ -14,7 +14,7 @@
 
 void DetectClientInfo(const std::string& ua, ClientInfo& ci);
 
-static constexpr unsigned int DEFAULT_WHOIS_NUMERIC = 321;
+static constexpr unsigned int DEFAULT_WHOIS_NUMERIC = 999;
 
 class ModuleClientInfo : public Module
 	, public Whois::EventListener
