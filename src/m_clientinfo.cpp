@@ -14,6 +14,8 @@
 
 void DetectClientInfo(const std::string& ua, ClientInfo& ci);
 
+static constexpr unsigned int DEFAULT_WHOIS_NUMERIC = 321;
+
 class ModuleClientInfo : public Module
 	, public Whois::EventListener
 {
@@ -31,7 +33,7 @@ class ModuleClientInfo : public Module
 	};
 
 	ClientInfoExt ext;
-	unsigned int whoisnumeric = RPL_WHOISSPECIAL;
+	unsigned int whoisnumeric = DEFAULT_WHOIS_NUMERIC;
 
  public:
 
@@ -45,7 +47,7 @@ class ModuleClientInfo : public Module
 	void ReadConfig(ConfigStatus& status) override
 	{
 		const auto& tag = ServerInstance->Config->ConfValue("clientinfo");
-		whoisnumeric = tag->getNum<unsigned int>("whoisnumeric", RPL_WHOISSPECIAL, 1, 999);
+		whoisnumeric = tag->getNum<unsigned int>("whoisnumeric", DEFAULT_WHOIS_NUMERIC, 1, 999);
 	}
 
 	ModResult OnPreCommand(std::string& command,

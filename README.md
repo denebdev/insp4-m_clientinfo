@@ -81,7 +81,7 @@ Load it from your InspIRCd config:
 ```
 
 The `whoisnumeric` setting controls the raw numeric used for CLIENTINFO WHOIS
-lines. If unset, it defaults to InspIRCd's `RPL_WHOISSPECIAL` numeric, `320`.
+lines. If unset, it defaults to `321`.
 
 ## License
 
