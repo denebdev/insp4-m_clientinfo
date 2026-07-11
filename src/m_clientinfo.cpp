@@ -31,6 +31,7 @@ class ModuleClientInfo : public Module
 	};
 
 	ClientInfoExt ext;
+	unsigned int whoisnumeric = RPL_WHOISSPECIAL;
 
  public:
 
@@ -39,6 +40,12 @@ class ModuleClientInfo : public Module
 		, Whois::EventListener(weak_from_this())
 		, ext(weak_from_this())
 	{
+	}
+
+	void ReadConfig(ConfigStatus& status) override
+	{
+		const auto& tag = ServerInstance->Config->ConfValue("clientinfo");
+		whoisnumeric = tag->getNum<unsigned int>("whoisnumeric", RPL_WHOISSPECIAL, 1, 999);
 	}
 
 	ModResult OnPreCommand(std::string& command,
@@ -130,45 +137,45 @@ class ModuleClientInfo : public Module
 			return;
 
 		ctx.SendLine(
-			RPL_WHOISSPECIAL,
+			whoisnumeric,
 			"CLIENTINFO Browser: " + ci->browser
 		);
 
 		ctx.SendLine(
-			RPL_WHOISSPECIAL,
+			whoisnumeric,
 			"CLIENTINFO OS: " + ci->os
 		);
 
 		ctx.SendLine(
-			RPL_WHOISSPECIAL,
+			whoisnumeric,
 			"CLIENTINFO Device: " + ci->device
 		);
 
 		ctx.SendLine(
-			RPL_WHOISSPECIAL,
+			whoisnumeric,
 			"CLIENTINFO Engine: " + ci->engine
 		);
 
 		ctx.SendLine(
-			RPL_WHOISSPECIAL,
+			whoisnumeric,
 			"CLIENTINFO UserAgent: " +
 			ci->useragent
 		);
 
 		ctx.SendLine(
-			RPL_WHOISSPECIAL,
+			whoisnumeric,
 			"CLIENTINFO UALength: " +
 			ConvToStr(ci->useragent.length())
 		);
 
 		ctx.SendLine(
-			RPL_WHOISSPECIAL,
+			whoisnumeric,
 			"CLIENTINFO IP: " +
 			target->GetAddress()
 		);
 
 		ctx.SendLine(
-			RPL_WHOISSPECIAL,
+			whoisnumeric,
 			"CLIENTINFO RiskScore: " +
 			ConvToStr(ci->riskscore)
 		);
@@ -184,7 +191,7 @@ class ModuleClientInfo : public Module
 			scorevisual = "-";
 
 		ctx.SendLine(
-			RPL_WHOISSPECIAL,
+			whoisnumeric,
 			"CLIENTINFO ScoreVisual: " +
 			scorevisual
 		);
@@ -201,7 +208,7 @@ class ModuleClientInfo : public Module
 			risklevel = "MEDIUM";
 
 		ctx.SendLine(
-			RPL_WHOISSPECIAL,
+			whoisnumeric,
 			"CLIENTINFO RiskLevel: " +
 			risklevel
 		);
@@ -212,7 +219,7 @@ class ModuleClientInfo : public Module
 			clienttype = "AUTOMATED";
 
 		ctx.SendLine(
-			RPL_WHOISSPECIAL,
+			whoisnumeric,
 			"CLIENTINFO Type: " +
 			clienttype
 		);
@@ -220,7 +227,7 @@ class ModuleClientInfo : public Module
 		if (ci->bot)
 		{
 			ctx.SendLine(
-				RPL_WHOISSPECIAL,
+				whoisnumeric,
 				"CLIENTINFO Bot: YES"
 			);
 		}
@@ -228,7 +235,7 @@ class ModuleClientInfo : public Module
 		if (ci->proxy)
 		{
 			ctx.SendLine(
-				RPL_WHOISSPECIAL,
+				whoisnumeric,
 				"CLIENTINFO Proxy: YES"
 			);
 		}
@@ -236,7 +243,7 @@ class ModuleClientInfo : public Module
 		if (ci->mobile)
 		{
 			ctx.SendLine(
-				RPL_WHOISSPECIAL,
+				whoisnumeric,
 				"CLIENTINFO Mobile: YES"
 			);
 		}
@@ -244,7 +251,7 @@ class ModuleClientInfo : public Module
 		if (ci->headless)
 		{
 			ctx.SendLine(
-				RPL_WHOISSPECIAL,
+				whoisnumeric,
 				"CLIENTINFO Headless: YES"
 			);
 		}
@@ -252,7 +259,7 @@ class ModuleClientInfo : public Module
 		if (ci->malicious)
 		{
 			ctx.SendLine(
-				RPL_WHOISSPECIAL,
+				whoisnumeric,
 				"CLIENTINFO Malicious: YES"
 			);
 		}
@@ -260,7 +267,7 @@ class ModuleClientInfo : public Module
 		if (!ci->riskreason.empty())
 		{
 			ctx.SendLine(
-				RPL_WHOISSPECIAL,
+				whoisnumeric,
 				"CLIENTINFO RiskReason: " +
 				ci->riskreason
 			);

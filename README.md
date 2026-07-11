@@ -32,11 +32,11 @@ Advanced WebIRC intelligence and client metadata module for InspIRCd4.
 
 ## Example WHOIS
 
-320 Browser: Chrome 136
-320 OS: Windows 11
-320 Device: Desktop
-320 Bot: No
-320 Risk: LOW
+321 Browser: Chrome 136
+321 OS: Windows 11
+321 Device: Desktop
+321 Bot: No
+321 Risk: LOW
 
 ## Example SNOTICE
 
@@ -77,7 +77,11 @@ Load it from your InspIRCd config:
 
 ```xml
 <module name="clientinfo">
+<clientinfo whoisnumeric="321">
 ```
+
+The `whoisnumeric` setting controls the raw numeric used for CLIENTINFO WHOIS
+lines. If unset, it defaults to InspIRCd's `RPL_WHOISSPECIAL` numeric, `320`.
 
 ## License
 
