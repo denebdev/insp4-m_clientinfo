@@ -37,14 +37,14 @@ Advanced WebIRC intelligence and client metadata module for InspIRCd4.
 
 ## Example WHOIS
 
-999 CLIENTINFO Browser: Chrome
-999 CLIENTINFO OS: Windows 10/11
-999 CLIENTINFO Device: Desktop
-999 CLIENTINFO IP: 198.51.100.23
-999 CLIENTINFO Host: user.example.net
-999 CLIENTINFO RiskScore: 0
-999 CLIENTINFO RiskLevel: LOW
-999 CLIENTINFO Stats: total=1 bots=0 proxies=0 datacenters=0 malicious=0
+999 CLIENTINFO Nick: Deneb Browser: Chrome
+999 CLIENTINFO Nick: Deneb OS: Windows 10/11
+999 CLIENTINFO Nick: Deneb Device: Desktop
+999 CLIENTINFO Nick: Deneb IP: 198.51.100.23
+999 CLIENTINFO Nick: Deneb Host: user.example.net
+999 CLIENTINFO Nick: Deneb RiskScore: 0
+999 CLIENTINFO Nick: Deneb RiskLevel: LOW
+999 CLIENTINFO Nick: Deneb Stats: total=1 bots=0 proxies=0 datacenters=0 malicious=0
 
 ## Example SNOTICE
 

@@ -423,102 +423,65 @@ class ModuleClientInfo : public Module
 		if (!ci)
 			return;
 
+		const std::string nickprefix = "CLIENTINFO Nick: " + target->nick + " ";
+
+		auto SendClientInfo = [&](const std::string& line)
+		{
+			ctx.SendLine(whoisnumeric, nickprefix + line);
+		};
+
 		if (showbrowser)
 		{
-			ctx.SendLine(
-				whoisnumeric,
-				"CLIENTINFO Browser: " + ci->browser
-			);
+			SendClientInfo("Browser: " + ci->browser);
 		}
 
 		if (showos)
 		{
-			ctx.SendLine(
-				whoisnumeric,
-				"CLIENTINFO OS: " + ci->os
-			);
+			SendClientInfo("OS: " + ci->os);
 		}
 
 		if (showdevice)
 		{
-			ctx.SendLine(
-				whoisnumeric,
-				"CLIENTINFO Device: " + ci->device
-			);
+			SendClientInfo("Device: " + ci->device);
 		}
 
-		ctx.SendLine(
-			whoisnumeric,
-			"CLIENTINFO Engine: " + ci->engine
-		);
+		SendClientInfo("Engine: " + ci->engine);
 
-		ctx.SendLine(
-			whoisnumeric,
-			"CLIENTINFO UserAgent: " +
-			ci->useragent
-		);
+		SendClientInfo("UserAgent: " + ci->useragent);
 
-		ctx.SendLine(
-			whoisnumeric,
-			"CLIENTINFO UALength: " +
-			ConvToStr(ci->useragent.length())
-		);
+		SendClientInfo("UALength: " + ConvToStr(ci->useragent.length()));
 
 		if (showip)
 		{
-			ctx.SendLine(
-				whoisnumeric,
-				"CLIENTINFO IP: " +
-				target->GetAddress()
-			);
+			SendClientInfo("IP: " + target->GetAddress());
 		}
 
 		if (showhost)
 		{
-			ctx.SendLine(
-				whoisnumeric,
-				"CLIENTINFO Host: " +
-				target->GetRealHost()
-			);
+			SendClientInfo("Host: " + target->GetRealHost());
 		}
 
 		if (!ci->platform.empty())
 		{
-			ctx.SendLine(
-				whoisnumeric,
-				"CLIENTINFO Platform: " + ci->platform
-			);
+			SendClientInfo("Platform: " + ci->platform);
 		}
 
 		if (!ci->language.empty())
 		{
-			ctx.SendLine(
-				whoisnumeric,
-				"CLIENTINFO Language: " + ci->language
-			);
+			SendClientInfo("Language: " + ci->language);
 		}
 
 		if (!ci->timezone.empty())
 		{
-			ctx.SendLine(
-				whoisnumeric,
-				"CLIENTINFO Timezone: " + ci->timezone
-			);
+			SendClientInfo("Timezone: " + ci->timezone);
 		}
 
 		if (!ci->screen.empty())
 		{
-			ctx.SendLine(
-				whoisnumeric,
-				"CLIENTINFO Screen: " + ci->screen
-			);
+			SendClientInfo("Screen: " + ci->screen);
 		}
 
-		ctx.SendLine(
-			whoisnumeric,
-			"CLIENTINFO RiskScore: " +
-			ConvToStr(ci->riskscore)
-		);
+		SendClientInfo("RiskScore: " + ConvToStr(ci->riskscore));
 
 		std::string scorevisual;
 
@@ -530,11 +493,7 @@ class ModuleClientInfo : public Module
 		if (scorevisual.empty())
 			scorevisual = "-";
 
-		ctx.SendLine(
-			whoisnumeric,
-			"CLIENTINFO ScoreVisual: " +
-			scorevisual
-		);
+		SendClientInfo("ScoreVisual: " + scorevisual);
 
 		std::string risklevel = "LOW";
 
@@ -547,83 +506,52 @@ class ModuleClientInfo : public Module
 		else if (ci->riskscore >= 20)
 			risklevel = "MEDIUM";
 
-		ctx.SendLine(
-			whoisnumeric,
-			"CLIENTINFO RiskLevel: " +
-			risklevel
-		);
+		SendClientInfo("RiskLevel: " + risklevel);
 
 		std::string clienttype = "HUMAN";
 
 		if (ci->bot || ci->headless || ci->malicious)
 			clienttype = "AUTOMATED";
 
-		ctx.SendLine(
-			whoisnumeric,
-			"CLIENTINFO Type: " +
-			clienttype
-		);
+		SendClientInfo("Type: " + clienttype);
 
 		if (ci->bot)
 		{
-			ctx.SendLine(
-				whoisnumeric,
-				"CLIENTINFO Bot: YES"
-			);
+			SendClientInfo("Bot: YES");
 		}
 
 		if (ci->proxy)
 		{
-			ctx.SendLine(
-				whoisnumeric,
-				"CLIENTINFO Proxy: YES"
-			);
+			SendClientInfo("Proxy: YES");
 		}
 
 		if (ci->datacenter)
 		{
-			ctx.SendLine(
-				whoisnumeric,
-				"CLIENTINFO Datacenter: YES"
-			);
+			SendClientInfo("Datacenter: YES");
 		}
 
 		if (ci->mobile)
 		{
-			ctx.SendLine(
-				whoisnumeric,
-				"CLIENTINFO Mobile: YES"
-			);
+			SendClientInfo("Mobile: YES");
 		}
 
 		if (ci->headless)
 		{
-			ctx.SendLine(
-				whoisnumeric,
-				"CLIENTINFO Headless: YES"
-			);
+			SendClientInfo("Headless: YES");
 		}
 
 		if (ci->malicious)
 		{
-			ctx.SendLine(
-				whoisnumeric,
-				"CLIENTINFO Malicious: YES"
-			);
+			SendClientInfo("Malicious: YES");
 		}
 
 		if (!ci->riskreason.empty())
 		{
-			ctx.SendLine(
-				whoisnumeric,
-				"CLIENTINFO RiskReason: " +
-				ci->riskreason
-			);
+			SendClientInfo("RiskReason: " + ci->riskreason);
 		}
 
-		ctx.SendLine(
-			whoisnumeric,
-			"CLIENTINFO Stats: total=" + ConvToStr(totalchecks) +
+		SendClientInfo(
+			"Stats: total=" + ConvToStr(totalchecks) +
 			" bots=" + ConvToStr(botchecks) +
 			" proxies=" + ConvToStr(proxychecks) +
 			" datacenters=" + ConvToStr(datacenterchecks) +
