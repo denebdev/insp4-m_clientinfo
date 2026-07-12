@@ -93,7 +93,7 @@ Load it from your InspIRCd config:
 ```xml
 <module name="clientinfo">
 <clientinfo
- whoisnumeric="999"
+ clientinfonumeric="999"
  operonly="yes"
  showbrowser="yes"
  showos="yes"
@@ -113,8 +113,8 @@ Load it from your InspIRCd config:
  datacenterips="192.0.2.0/24">
 ```
 
-The `whoisnumeric` setting controls the raw numeric used for `/CLIENTINFO`
-response lines. If unset, it defaults to `999`.
+The `clientinfonumeric` setting controls the raw numeric used for
+`/CLIENTINFO` response lines. If unset, it defaults to `999`.
 
 The module reads client metadata from `METADATA`. The supported keys are
 `useragent`, `platform`, `language`, `timezone`, and `screen`. The

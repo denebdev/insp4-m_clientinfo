@@ -19,7 +19,7 @@
 
 void DetectClientInfo(const std::string& ua, ClientInfo& ci);
 
-static constexpr unsigned int DEFAULT_WHOIS_NUMERIC = 999;
+static constexpr unsigned int DEFAULT_CLIENTINFO_NUMERIC = 999;
 static constexpr size_t MAX_METADATA_LENGTH = 512;
 
 static bool ParseIPv4(const std::string& address, uint32_t& out)
@@ -125,7 +125,7 @@ class ModuleClientInfo : public Module
 	};
 
 	ClientInfoExt ext;
-	unsigned int whoisnumeric = DEFAULT_WHOIS_NUMERIC;
+	unsigned int clientinfonumeric = DEFAULT_CLIENTINFO_NUMERIC;
 	std::vector<std::string> proxyips;
 	std::vector<std::string> datacenterips;
 	std::string logfile;
@@ -160,7 +160,12 @@ class ModuleClientInfo : public Module
 	void ReadConfig(ConfigStatus& status) override
 	{
 		const auto& tag = ServerInstance->Config->ConfValue("clientinfo");
-		whoisnumeric = tag->getNum<unsigned int>("whoisnumeric", DEFAULT_WHOIS_NUMERIC, 1, 999);
+		clientinfonumeric = tag->getNum<unsigned int>(
+			"clientinfonumeric",
+			tag->getNum<unsigned int>("whoisnumeric", DEFAULT_CLIENTINFO_NUMERIC, 1, 999),
+			1,
+			999
+		);
 		operonly = tag->getBool("operonly", true);
 		showbrowser = tag->getBool("showbrowser", true);
 		showos = tag->getBool("showos", true);
@@ -404,7 +409,7 @@ class ModuleClientInfo : public Module
 
 	void SendClientInfoNumeric(User* source, User* target, const std::string& line)
 	{
-		Numeric::Numeric numeric(whoisnumeric);
+		Numeric::Numeric numeric(clientinfonumeric);
 		numeric.push(target->nick);
 		numeric.push(line);
 		source->WriteNumeric(numeric);
