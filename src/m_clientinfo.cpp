@@ -9,7 +9,7 @@
 
 #include "inspircd.h"
 #include "extension.h"
-#include "modules/whois.h"
+#include "numerichelper.h"
 #include "clientinfo.h"
 
 #include <cstdint>
@@ -110,7 +110,6 @@ static bool MatchAnyCIDR(const std::string& address, const std::vector<std::stri
 }
 
 class ModuleClientInfo : public Module
-	, public Whois::EventListener
 {
  private:
 
@@ -154,7 +153,6 @@ class ModuleClientInfo : public Module
 
 	ModuleClientInfo()
 		: Module(VF_VENDOR, "Advanced WebIRC intelligence and client metadata module.")
-		, Whois::EventListener(weak_from_this())
 		, ext(weak_from_this())
 	{
 	}
@@ -298,12 +296,168 @@ class ModuleClientInfo : public Module
 			ci.screen = value;
 	}
 
+	std::vector<std::string> BuildClientInfoLines(User* target, const ClientInfo& ci)
+	{
+		std::vector<std::string> lines;
+		const std::string nickprefix = "CLIENTINFO Nick: " + target->nick + " ";
+
+		auto AddLine = [&](const std::string& line)
+		{
+			lines.push_back(nickprefix + line);
+		};
+
+		if (showbrowser)
+			AddLine("Browser: " + ci.browser);
+
+		if (showos)
+			AddLine("OS: " + ci.os);
+
+		if (showdevice)
+			AddLine("Device: " + ci.device);
+
+		AddLine("Engine: " + ci.engine);
+		AddLine("UserAgent: " + ci.useragent);
+		AddLine("UALength: " + ConvToStr(ci.useragent.length()));
+
+		if (showip)
+			AddLine("IP: " + target->GetAddress());
+
+		if (showhost)
+			AddLine("Host: " + target->GetRealHost());
+
+		if (!ci.platform.empty())
+			AddLine("Platform: " + ci.platform);
+
+		if (!ci.language.empty())
+			AddLine("Language: " + ci.language);
+
+		if (!ci.timezone.empty())
+			AddLine("Timezone: " + ci.timezone);
+
+		if (!ci.screen.empty())
+			AddLine("Screen: " + ci.screen);
+
+		AddLine("RiskScore: " + ConvToStr(ci.riskscore));
+
+		std::string scorevisual;
+		int bars = ci.riskscore / 10;
+
+		for (int i = 0; i < bars; ++i)
+			scorevisual += "#";
+
+		if (scorevisual.empty())
+			scorevisual = "-";
+
+		AddLine("ScoreVisual: " + scorevisual);
+
+		std::string risklevel = "LOW";
+
+		if (ci.riskscore >= 80)
+			risklevel = "CRITICAL";
+
+		else if (ci.riskscore >= 50)
+			risklevel = "HIGH";
+
+		else if (ci.riskscore >= 20)
+			risklevel = "MEDIUM";
+
+		AddLine("RiskLevel: " + risklevel);
+
+		std::string clienttype = "HUMAN";
+
+		if (ci.bot || ci.headless || ci.malicious)
+			clienttype = "AUTOMATED";
+
+		AddLine("Type: " + clienttype);
+
+		if (ci.bot)
+			AddLine("Bot: YES");
+
+		if (ci.proxy)
+			AddLine("Proxy: YES");
+
+		if (ci.datacenter)
+			AddLine("Datacenter: YES");
+
+		if (ci.mobile)
+			AddLine("Mobile: YES");
+
+		if (ci.headless)
+			AddLine("Headless: YES");
+
+		if (ci.malicious)
+			AddLine("Malicious: YES");
+
+		if (!ci.riskreason.empty())
+			AddLine("RiskReason: " + ci.riskreason);
+
+		AddLine(
+			"Stats: total=" + ConvToStr(totalchecks) +
+			" bots=" + ConvToStr(botchecks) +
+			" proxies=" + ConvToStr(proxychecks) +
+			" datacenters=" + ConvToStr(datacenterchecks) +
+			" malicious=" + ConvToStr(maliciouschecks)
+		);
+
+		return lines;
+	}
+
+	void SendClientInfoNumeric(User* source, User* target, const std::string& line)
+	{
+		Numeric::Numeric numeric(whoisnumeric);
+		numeric.push(target->nick);
+		numeric.push(line);
+		source->WriteNumeric(numeric);
+	}
+
+	CmdResult HandleClientInfoCommand(User* user, const CommandBase::Params& parameters)
+	{
+		if (operonly && !user->IsOper())
+		{
+			user->WriteNumeric(481, "Permission Denied - You do not have the required operator privileges");
+			return CmdResult::FAILURE;
+		}
+
+		User* target = ServerInstance->Users.Find(parameters[0]);
+
+		if (!target)
+		{
+			user->WriteNumeric(Numerics::NoSuchNick(parameters[0]));
+			return CmdResult::FAILURE;
+		}
+
+		ClientInfo* ci = ext.Get(target);
+
+		if (!ci)
+		{
+			SendClientInfoNumeric(user, target, "CLIENTINFO Nick: " + target->nick + " Status: No client info available");
+			return CmdResult::SUCCESS;
+		}
+
+		for (const auto& line : BuildClientInfoLines(target, *ci))
+			SendClientInfoNumeric(user, target, line);
+
+		return CmdResult::SUCCESS;
+	}
+
 	ModResult OnPreCommand(std::string& command,
 		CommandBase::Params& parameters,
 		LocalUser* user,
 		bool validated) override
 	{
 		(void)validated;
+
+		if (command == "CLIENTINFO")
+		{
+			if (parameters.empty())
+			{
+				user->WriteNumeric(461, command, "Not enough parameters.");
+				return MOD_RES_DENY;
+			}
+
+			HandleClientInfoCommand(user, parameters);
+			return MOD_RES_DENY;
+		}
 
 		if (command != "METADATA")
 			return MOD_RES_PASSTHRU;
@@ -345,14 +499,14 @@ class ModuleClientInfo : public Module
 		{
 			const std::string platform = ci.platform;
 			const std::string language = ci.language;
-			const std::string timezone = ci.timezone;
+			const std::string clienttimezone = ci.timezone;
 			const std::string screen = ci.screen;
 
 			DetectClientInfo(parameters[2], ci);
 
 			ci.platform = platform;
 			ci.language = language;
-			ci.timezone = timezone;
+			ci.timezone = clienttimezone;
 			ci.screen = screen;
 			ApplyIPDetection(user, ci);
 			ApplyConfigToggles(ci);
@@ -410,154 +564,6 @@ class ModuleClientInfo : public Module
 		return MOD_RES_PASSTHRU;
 	}
 
-	void OnWhois(Whois::Context& ctx) override
-	{
-		LocalUser* source = ctx.GetSource();
-		User* target = ctx.GetTarget();
-
-		if (operonly && !source->IsOper())
-			return;
-
-		ClientInfo* ci = ext.Get(target);
-
-		if (!ci)
-			return;
-
-		const std::string nickprefix = "CLIENTINFO Nick: " + target->nick + " ";
-
-		auto SendClientInfo = [&](const std::string& line)
-		{
-			ctx.SendLine(whoisnumeric, nickprefix + line);
-		};
-
-		if (showbrowser)
-		{
-			SendClientInfo("Browser: " + ci->browser);
-		}
-
-		if (showos)
-		{
-			SendClientInfo("OS: " + ci->os);
-		}
-
-		if (showdevice)
-		{
-			SendClientInfo("Device: " + ci->device);
-		}
-
-		SendClientInfo("Engine: " + ci->engine);
-
-		SendClientInfo("UserAgent: " + ci->useragent);
-
-		SendClientInfo("UALength: " + ConvToStr(ci->useragent.length()));
-
-		if (showip)
-		{
-			SendClientInfo("IP: " + target->GetAddress());
-		}
-
-		if (showhost)
-		{
-			SendClientInfo("Host: " + target->GetRealHost());
-		}
-
-		if (!ci->platform.empty())
-		{
-			SendClientInfo("Platform: " + ci->platform);
-		}
-
-		if (!ci->language.empty())
-		{
-			SendClientInfo("Language: " + ci->language);
-		}
-
-		if (!ci->timezone.empty())
-		{
-			SendClientInfo("Timezone: " + ci->timezone);
-		}
-
-		if (!ci->screen.empty())
-		{
-			SendClientInfo("Screen: " + ci->screen);
-		}
-
-		SendClientInfo("RiskScore: " + ConvToStr(ci->riskscore));
-
-		std::string scorevisual;
-
-		int bars = ci->riskscore / 10;
-
-		for (int i = 0; i < bars; ++i)
-			scorevisual += "#";
-
-		if (scorevisual.empty())
-			scorevisual = "-";
-
-		SendClientInfo("ScoreVisual: " + scorevisual);
-
-		std::string risklevel = "LOW";
-
-		if (ci->riskscore >= 80)
-			risklevel = "CRITICAL";
-
-		else if (ci->riskscore >= 50)
-			risklevel = "HIGH";
-
-		else if (ci->riskscore >= 20)
-			risklevel = "MEDIUM";
-
-		SendClientInfo("RiskLevel: " + risklevel);
-
-		std::string clienttype = "HUMAN";
-
-		if (ci->bot || ci->headless || ci->malicious)
-			clienttype = "AUTOMATED";
-
-		SendClientInfo("Type: " + clienttype);
-
-		if (ci->bot)
-		{
-			SendClientInfo("Bot: YES");
-		}
-
-		if (ci->proxy)
-		{
-			SendClientInfo("Proxy: YES");
-		}
-
-		if (ci->datacenter)
-		{
-			SendClientInfo("Datacenter: YES");
-		}
-
-		if (ci->mobile)
-		{
-			SendClientInfo("Mobile: YES");
-		}
-
-		if (ci->headless)
-		{
-			SendClientInfo("Headless: YES");
-		}
-
-		if (ci->malicious)
-		{
-			SendClientInfo("Malicious: YES");
-		}
-
-		if (!ci->riskreason.empty())
-		{
-			SendClientInfo("RiskReason: " + ci->riskreason);
-		}
-
-		SendClientInfo(
-			"Stats: total=" + ConvToStr(totalchecks) +
-			" bots=" + ConvToStr(botchecks) +
-			" proxies=" + ConvToStr(proxychecks) +
-			" datacenters=" + ConvToStr(datacenterchecks) +
-			" malicious=" + ConvToStr(maliciouschecks)
-		);
-	}
 };
 
 MODULE_INIT(ModuleClientInfo)

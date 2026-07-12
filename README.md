@@ -4,7 +4,7 @@ Advanced WebIRC intelligence and client metadata module for InspIRCd4.
 
 ## Features
 
-- IRCop WHOIS client information
+- IRCop `/CLIENTINFO <nick>` command
 - Browser and OS detection
 - Device detection
 - Headless browser detection
@@ -35,16 +35,22 @@ Advanced WebIRC intelligence and client metadata module for InspIRCd4.
 - IP-based proxy/VPN CIDR matches
 - IP-based datacenter/cloud CIDR matches
 
-## Example WHOIS
+## Example CLIENTINFO
 
-999 CLIENTINFO Nick: Deneb Browser: Chrome
-999 CLIENTINFO Nick: Deneb OS: Windows 10/11
-999 CLIENTINFO Nick: Deneb Device: Desktop
-999 CLIENTINFO Nick: Deneb IP: 198.51.100.23
-999 CLIENTINFO Nick: Deneb Host: user.example.net
-999 CLIENTINFO Nick: Deneb RiskScore: 0
-999 CLIENTINFO Nick: Deneb RiskLevel: LOW
-999 CLIENTINFO Nick: Deneb Stats: total=1 bots=0 proxies=0 datacenters=0 malicious=0
+```irc
+/CLIENTINFO Deneb
+999 Deneb :CLIENTINFO Nick: Deneb Browser: Chrome
+999 Deneb :CLIENTINFO Nick: Deneb OS: Windows 10/11
+999 Deneb :CLIENTINFO Nick: Deneb Device: Desktop
+999 Deneb :CLIENTINFO Nick: Deneb IP: 198.51.100.23
+999 Deneb :CLIENTINFO Nick: Deneb Host: user.example.net
+999 Deneb :CLIENTINFO Nick: Deneb RiskScore: 0
+999 Deneb :CLIENTINFO Nick: Deneb RiskLevel: LOW
+999 Deneb :CLIENTINFO Nick: Deneb Stats: total=1 bots=0 proxies=0 datacenters=0 malicious=0
+```
+
+The command returns raw `999` lines with the target nick in every response, so
+mIRC scripts can parse and act on the nick. Normal WHOIS output is not changed.
 
 ## Example SNOTICE
 
@@ -107,12 +113,12 @@ Load it from your InspIRCd config:
  datacenterips="192.0.2.0/24">
 ```
 
-The `whoisnumeric` setting controls the raw numeric used for CLIENTINFO WHOIS
-lines. If unset, it defaults to `999`.
+The `whoisnumeric` setting controls the raw numeric used for `/CLIENTINFO`
+response lines. If unset, it defaults to `999`.
 
 The module reads client metadata from `METADATA`. The supported keys are
-`useragent`, `platform`, `language`, `timezone`, and `screen`. WHOIS client
-information is only shown to IRC operators by default.
+`useragent`, `platform`, `language`, `timezone`, and `screen`. The
+`/CLIENTINFO <nick>` command is only available to IRC operators by default.
 
 `proxyips` and `datacenterips` accept comma-separated IPv4 addresses or CIDR
 ranges. These lists are local and deterministic; no external network lookup is
