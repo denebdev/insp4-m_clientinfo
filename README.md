@@ -12,12 +12,9 @@ Advanced WebIRC intelligence and client metadata module for InspIRCd4.
 - WebIRC metadata support
 - Client risk scoring
 - IRCop SNOTICE alerts
-- Client statistics
-- Logging support
-- Generic metadata support
 - InspIRCd4 native module
 
-## Planned Detection
+## Implemented Detection
 
 - HeadlessChrome
 - Selenium
@@ -27,21 +24,31 @@ Advanced WebIRC intelligence and client metadata module for InspIRCd4.
 - wget
 - python requests
 - suspicious User-Agents
-- datacenter detection
-- proxy detection
+- Tor/VPN/proxy User-Agent hints
+- datacenter/cloud User-Agent hints
+
+## Planned Detection
+
+- Client statistics
+- Connection logging
+- Additional metadata fields
+- IP-based datacenter detection
+- IP-based proxy/VPN detection
+- Configurable detection toggles
 
 ## Example WHOIS
 
-999 Browser: Chrome 136
-999 OS: Windows 11
-999 Device: Desktop
-999 Bot: No
-999 Risk: LOW
+999 CLIENTINFO Browser: Chrome
+999 CLIENTINFO OS: Windows 10/11
+999 CLIENTINFO Device: Desktop
+999 CLIENTINFO RiskScore: 0
+999 CLIENTINFO RiskLevel: LOW
 
 ## Example SNOTICE
 
-*** CLIENTINFO: Deneb using Chrome on Windows 11
-*** CLIENTINFO ALERT: Possible headless browser detected
+*** CLIENTINFO: Deneb [198.51.100.23] using Chrome on Windows 10/11
+*** CLIENTINFO ALERT: Possible bot detected from Deneb [198.51.100.23]
+*** CLIENTINFO CRITICAL: High risk client detected from Deneb [198.51.100.23]
 
 ## Status
 
@@ -82,6 +89,9 @@ Load it from your InspIRCd config:
 
 The `whoisnumeric` setting controls the raw numeric used for CLIENTINFO WHOIS
 lines. If unset, it defaults to `999`.
+
+The module currently reads User-Agent data from `METADATA` with the
+`useragent` key. WHOIS client information is only shown to IRC operators.
 
 ## License
 
